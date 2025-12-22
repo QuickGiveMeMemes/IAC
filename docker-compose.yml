@@ -1,0 +1,48 @@
+version: '2'
+services:
+  # ros-bridge:
+  #   platform: linux/amd64
+
+  bridge:
+    platform: linux/amd64
+    image: ros-bridge:0.0
+    container_name: ros-bridge
+    environment:
+      - CARLA_HOST=host.docker.internal
+      - CARLA_PORT=2000
+      - ROS_DOMAIN_ID=0
+      - PYTHONUNBUFFERED=1
+
+    volumes:
+      - ./deps/carla-ros-bridge:/opt/carla-ros-bridge/src
+    # networks:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    working_dir: /opt/carla-ros-bridge
+    command: /bin/bash -c "./src/build.sh && exec bash"
+    tty: true
+    stdin_open: true
+    networks:
+      - ros
+  
+  iac:
+    platform: linux/amd64
+    image: osrf/ros:humble-desktop
+    container_name: iac
+    environment:
+      - ROS_DOMAIN_ID=0
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - CYCLONEDDS_URI=/ros2_ws/src/iac/cyclonedds_config.xml
+    
+    volumes:
+      - ./iac:/ros2_ws/src/iac
+    working_dir: /ros2_ws/src/iac
+    command: /bin/bash
+    tty: true
+    stdin_open: true
+    networks:
+      - ros
+
+networks:
+  ros:
+    driver: bridge

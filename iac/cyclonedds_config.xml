@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CycloneDDS
+    xmlns="https://cdds.io/config"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd"
+>
+    <Domain Id="0">
+        <General>
+            <AllowMulticast>default</AllowMulticast>
+        </General>
+        <Discovery>
+            <Peers>
+                <Peer Address="host.docker.internal" />
+            </Peers>
+            <ParticipantIndex>auto</ParticipantIndex>
+        </Discovery>
+        <Tracing>
+            <Verbosity>fine</Verbosity>
+            <OutputFile>${HOME}/cdds/log/cdds.log.${CYCLONEDDS_PID}</OutputFile>
+        </Tracing>
+    </Domain>
+
+ </CycloneDDS>
