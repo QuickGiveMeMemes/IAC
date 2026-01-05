@@ -3,27 +3,43 @@ services:
   # ros-bridge:
   #   platform: linux/amd64
 
-  bridge:
-    platform: linux/amd64
-    image: ros-bridge:0.0
-    container_name: ros-bridge
-    environment:
-      - CARLA_HOST=host.docker.internal
-      - CARLA_PORT=2000
-      - ROS_DOMAIN_ID=0
-      - PYTHONUNBUFFERED=1
+  # bridge:
+  #   platform: linux/amd64
+  #   image: ros-bridge:0.0
+  #   container_name: ros-bridge
+  #   environment:
+  #     - CARLA_HOST=host.docker.internal
+  #     - CARLA_PORT=2000
+  #     - ROS_DOMAIN_ID=0
+  #     - PYTHONUNBUFFERED=1
 
-    volumes:
-      - ./deps/carla-ros-bridge:/opt/carla-ros-bridge/src
-    # networks:
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    working_dir: /opt/carla-ros-bridge
-    command: /bin/bash -c "./src/build.sh && exec bash"
+  #   volumes:
+  #     - ./deps/carla-ros-bridge:/opt/carla-ros-bridge/src
+  #   # networks:
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  #   working_dir: /opt/carla-ros-bridge
+  #   command: /bin/bash -c "./src/build.sh && exec bash"
+  #   tty: true
+  #   stdin_open: true
+  #   networks:
+  #     - ros
+  pairsim-bridge:
+    platform: linux/amd64
+    image: ros-tcp-bridge:0.0
+    container_name: pairsim-bridge
+    working_dir: /ros2_ws/src
+    command: /bin/bash
     tty: true
     stdin_open: true
-    networks:
-      - ros
+    environment:
+      - HOST=host.docker.internal
+      - PORT=10000
+    ports:
+      - 10000:10000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   
   iac:
     platform: linux/amd64
