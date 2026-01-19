@@ -1,0 +1,19 @@
+FROM osrf/ros:humble-desktop-full
+
+# Default user values (pass in $(id -u) and $(id -g) for SHM)
+ARG UNAME=iac
+ARG UID=1000
+ARG GID=$UID
+
+
+# Dependency Install
+
+RUN apt update && apt install -y \
+    sudo
+
+# Custom User Setup (Shared memory transport)
+
+RUN groupadd --gid $GID $UNAME && \
+    useradd --uid $UID --git $GID -m $UNAME && \
+    echo $UNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$UNAME && \
+    chmod 440 /etc/sudoers.d/$UNAME

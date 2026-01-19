@@ -24,41 +24,42 @@ services:
   #   stdin_open: true
   #   networks:
   #     - ros
-  pairsim-bridge:
-    platform: linux/amd64
-    image: ros-tcp-bridge:0.0
-    container_name: pairsim-bridge
-    working_dir: /ros2_ws/src
-    command: /bin/bash
-    tty: true
-    stdin_open: true
-    environment:
-      - HOST=host.docker.internal
-      - PORT=10000
-    ports:
-      - 10000:10000
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+  # pairsim-bridge:
+  #   platform: linux/amd64
+  #   image: ros-tcp-bridge:0.0
+  #   container_name: pairsim-bridge
+  #   working_dir: /ros2_ws/src
+  #   command: /bin/bash
+  #   tty: true
+  #   stdin_open: true
+  #   environment:
+  #     - HOST=host.docker.internal
+  #     - PORT=10000
+  #   ports:
+  #     - 10000:10000
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
 
   
   iac:
-    platform: linux/amd64
-    image: osrf/ros:humble-desktop
+    build:
+      context: ./iac/
+      dockerfile: Dockerfile_dev
+      args:
+        UID: $(id -u)
+        GID: $(id -g)
+    image: iac
     container_name: iac
+    platform: linux/amd64
     environment:
-      - ROS_DOMAIN_ID=0
-      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-      - CYCLONEDDS_URI=/ros2_ws/src/iac/cyclonedds_config.xml
-    
+      - DISPLAY: $DISPLAY
     volumes:
       - ./iac:/ros2_ws/src/iac
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
     working_dir: /ros2_ws/src/iac
     command: /bin/bash
     tty: true
     stdin_open: true
-    networks:
-      - ros
-
-networks:
-  ros:
-    driver: bridge
+    network_mode: "host"
+    ipc: "host"
+    pid: "host"
